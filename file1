@@ -1,0 +1,21 @@
+import telebot
+import google.generativeai as genai
+import os
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+AI_KEY = os.getenv("AI_KEY")
+
+bot = telebot.TeleBot(BOT_TOKEN)
+
+genai.configure(api_key=AI_KEY)
+model = genai.GenerativeModel("gemini-pro")
+
+@bot.message_handler(func=lambda message: True)
+def reply(message):
+    try:
+        response = model.generate_content(message.text)
+        bot.reply_to(message, response.text)
+    except:
+        bot.reply_to(message, "Sorry, something went wrong.")
+
+bot.polling()
